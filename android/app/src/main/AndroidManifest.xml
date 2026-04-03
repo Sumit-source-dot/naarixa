@@ -1,8 +1,36 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Location & Emergency Permissions -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    
+    <!-- SOS Trigger System Permissions -->
+    <!-- Volume button listener & accelerometer require sensor access -->
+    <uses-permission android:name="android.permission.BODY_SENSORS"/>
+    
+    <!-- Emergency call & SMS permissions -->
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    
+    <!-- Background service for SOS monitoring -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+    
+    <!-- Android 12+ specific background execution -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    
+    <!-- Disable screen lock if needed during SOS -->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
     <application
         android:label="naarixa"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config">
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"

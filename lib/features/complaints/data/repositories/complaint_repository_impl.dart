@@ -40,4 +40,18 @@ class ComplaintRepositoryImpl implements ComplaintRepository {
 
     await _client.from('complaints').insert(payload);
   }
+
+  @override
+  Future<void> deleteComplaint(String complaintId) async {
+    final user = _client.auth.currentUser;
+    if (user == null) {
+      throw const AuthException('Please login to delete a complaint.');
+    }
+
+    await _client
+        .from('complaints')
+        .delete()
+        .eq('id', complaintId)
+        .eq('user_id', user.id);
+  }
 }

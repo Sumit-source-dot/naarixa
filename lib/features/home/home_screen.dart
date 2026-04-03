@@ -100,8 +100,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
 
                   try {
-                    if (_sosActive && _activeSosId != null) {
-                      await controller.stopSOS(sosId: _activeSosId);
+                    if (_sosActive) {
+                      await controller.stopSOS(
+                        sosId: _activeSosId,
+                        userId: user.id,
+                      );
                       if (!context.mounted) return;
                       setState(() {
                         _sosActive = false;

@@ -49,6 +49,10 @@ dependencies:
   # Date formatting
   intl: ^0.19.0
   url_launcher: ^6.3.0
+  
+  # SOS Trigger System Packages
+  sensors_plus: ^7.0.0                    # Accelerometer for shake detection
+  permission_handler: ^11.0.0             # Runtime permissions management
 
 dev_dependencies:
   flutter_test:

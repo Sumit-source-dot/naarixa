@@ -21,7 +21,7 @@ class HeroSectionWidget extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.network(
-            'https://images.unsplash.com/photo-1529156069898-49953e39b3ac',
+            'https://static.vecteezy.com/system/resources/thumbnails/035/349/047/small_2x/ai-generated-a-girl-in-a-business-attire-posing-on-gray-background-free-photo.jpg',
             fit: BoxFit.cover,
             loadingBuilder: (context, child, progress) {
               if (progress == null) return child;

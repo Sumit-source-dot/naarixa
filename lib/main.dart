@@ -6,5 +6,5 @@ import 'app/app_initializer.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppInitializer.initialize();
-  runApp(const ProviderScope(child: LivoraApp()));
+  runApp(const ProviderScope(child: NaarixaApp()));
 }

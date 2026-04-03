@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LivoraAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const LivoraAppBar({required this.title, this.actions, super.key});
+class NaarixaAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const NaarixaAppBar({required this.title, this.actions, super.key});
 
   final String title;
   final List<Widget>? actions;

@@ -249,9 +249,16 @@ class SosController {
     }
   }
 
-  Future<void> stopSOS({required dynamic sosId}) async {
+  Future<void> stopSOS({dynamic sosId, String? userId}) async {
+    final resolvedSosId = sosId ??
+        (userId != null ? await _sosRepository.getLatestOpenSOSId(userId) : null);
+
+    if (resolvedSosId == null) {
+      throw StateError('No active SOS found to stop.');
+    }
+
     stopTracking();
-    await _sosRepository.updateSOSStatus(sosId: sosId, status: 'resolved');
+    await _sosRepository.markSosStopped(resolvedSosId);
   }
 
   void startLiveTracking({required dynamic sosId, required String userId}) {
@@ -334,7 +341,7 @@ class SosController {
 
       print('✅ Safety check SMS sent successfully');
 
-      Future.delayed(const Duration(minutes: 2), () async {
+      Future.delayed(const Duration(seconds: 30), () async {
         try {
           final hasSafeResponse = await _twilioService.hasUserRespondedSafe(sosId);
 
@@ -428,6 +435,44 @@ class SosController {
           ),
         );
       }
+
+      unawaited(
+        Future.delayed(const Duration(seconds: 30), () async {
+          try {
+            final hasSafeResponse = await _twilioService.hasUserRespondedSafe(sosId);
+
+            if (!hasSafeResponse) {
+              debugPrint('No response to high-risk SMS. Initiating emergency call...');
+
+              final callSent = await _twilioService.makeEmergencyCall(
+                toPhoneNumber: phoneNumber,
+                sosId: sosId,
+                userId: ownerUserId,
+              );
+
+              if (callSent) {
+                debugPrint('Emergency follow-up call initiated successfully.');
+                if (isMounted()) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('No SMS reply detected. Emergency call initiated.')),
+                  );
+                }
+              } else {
+                debugPrint('Emergency follow-up call failed.');
+                if (isMounted()) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('No SMS reply detected, but emergency call failed.')),
+                  );
+                }
+              }
+            } else {
+              debugPrint('User responded SAFE to high-risk SMS. Skipping call.');
+            }
+          } catch (e) {
+            debugPrint('Error in delayed high-risk call flow: $e');
+          }
+        }),
+      );
     } catch (e) {
       debugPrint('High-risk notification flow failed: $e');
       if (isMounted()) {

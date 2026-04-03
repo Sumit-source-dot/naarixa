@@ -66,6 +66,23 @@ class NotificationsController extends AsyncNotifier<List<AppNotification>> {
 
     await refresh();
   }
+
+  Future<void> deleteNotification(String notificationId) async {
+    final previousState = state;
+
+    state = state.whenData(
+      (items) => items
+          .where((item) => item.id != notificationId)
+          .toList(growable: false),
+    );
+
+    try {
+      await _supabase.from(_tableName).delete().eq('id', notificationId);
+    } catch (_) {
+      state = previousState;
+      rethrow;
+    }
+  }
 }
 
 class AppNotification {

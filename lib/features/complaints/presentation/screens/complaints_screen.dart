@@ -43,6 +43,44 @@ class ComplaintsScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               final entry = complaints[index];
               return ComplaintTile(
+                onDelete: () async {
+                  final shouldDelete = await showDialog<bool>(
+                    context: context,
+                    builder: (dialogContext) => AlertDialog(
+                      title: const Text('Delete complaint?'),
+                      content: const Text(
+                        'This will permanently remove the complaint from your list.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogContext, false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogContext, true),
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (shouldDelete != true) return;
+
+                  try {
+                    await ref
+                        .read(complaintsControllerProvider.notifier)
+                        .deleteComplaint(entry.id);
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Complaint deleted.')),
+                    );
+                  } catch (error) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Delete failed: $error')),
+                    );
+                  }
+                },
                 title: entry.title,
                 priority: entry.priority,
                 status: entry.status,

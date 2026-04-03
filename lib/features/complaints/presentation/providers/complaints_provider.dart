@@ -52,4 +52,22 @@ class ComplaintsController extends StateNotifier<AsyncValue<List<Complaint>>> {
     await _repository.submitComplaint(complaint);
     await _loadComplaints();
   }
+
+  Future<void> deleteComplaint(String complaintId) async {
+    final currentState = state;
+
+    state = currentState.whenData(
+      (items) => items
+          .where((item) => item.id != complaintId)
+          .toList(growable: false),
+    );
+
+    try {
+      await _repository.deleteComplaint(complaintId);
+    } catch (error, stackTrace) {
+      state = currentState;
+      state = AsyncValue.error(error, stackTrace);
+      rethrow;
+    }
+  }
 }

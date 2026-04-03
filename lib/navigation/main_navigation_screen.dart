@@ -165,9 +165,13 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
         backgroundColor: _sosActive ? colorScheme.primary : colorScheme.error,
         foregroundColor: _sosActive ? colorScheme.onPrimary : colorScheme.onError,
         onPressed: () async {
-          if (_sosActive && _activeSosId != null) {
+          if (_sosActive) {
             try {
-              await _sosController.stopSOS(sosId: _activeSosId);
+              final userId = Supabase.instance.client.auth.currentUser?.id;
+              await _sosController.stopSOS(
+                sosId: _activeSosId,
+                userId: userId,
+              );
               if (!mounted) return;
               setState(() {
                 _sosActive = false;

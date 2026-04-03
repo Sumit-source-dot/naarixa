@@ -218,6 +218,53 @@ class SOSRepository {
     }
   }
 
+  /// Find latest open SOS ID for a user.
+  Future<dynamic> getLatestOpenSOSId(String userId) async {
+    try {
+      final rows = await _client
+          .from('sos_alerts')
+          .select('id, status, created_at')
+          .eq('user_id', userId)
+          .order('created_at', ascending: false)
+          .limit(10);
+
+      for (final row in rows) {
+        final status = (row['status'] ?? '').toString().toLowerCase();
+        final isOpen =
+            status.isEmpty ||
+            (status != 'resolved' &&
+                status != 'inactive' &&
+                status != 'closed' &&
+                status != 'stopped');
+        if (isOpen) {
+          return row['id'];
+        }
+      }
+
+      return null;
+    } catch (e) {
+      print('❌ Error fetching latest open SOS: $e');
+      return null;
+    }
+  }
+
+  /// Mark SOS as stopped with fallback statuses for schema compatibility.
+  Future<void> markSosStopped(dynamic sosId) async {
+    final candidates = ['resolved', 'inactive', 'closed', 'stopped'];
+    dynamic lastError;
+
+    for (final status in candidates) {
+      try {
+        await updateSOSStatus(sosId: sosId, status: status);
+        return;
+      } catch (e) {
+        lastError = e;
+      }
+    }
+
+    throw lastError ?? Exception('Failed to stop SOS for id: $sosId');
+  }
+
   /// Update SOS alert risk level
   Future<void> updateSOSRiskLevel({
     required dynamic sosId,
