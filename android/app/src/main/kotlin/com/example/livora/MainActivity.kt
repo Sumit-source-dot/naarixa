@@ -1,4 +1,4 @@
-package com.example.naarixa
+package com.example.livora
 
 import io.flutter.embedding.android.FlutterActivity
 

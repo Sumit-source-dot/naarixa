@@ -5,8 +5,8 @@ import '../config/routes.dart';
 import '../core/theme/app_theme.dart';
 import '../providers/theme_provider.dart';
 
-class LivoraApp extends ConsumerWidget {
-  const LivoraApp({super.key});
+class NaarixaApp extends ConsumerWidget {
+  const NaarixaApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
