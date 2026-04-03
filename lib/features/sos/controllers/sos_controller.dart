@@ -428,6 +428,44 @@ class SosController {
           ),
         );
       }
+
+      unawaited(
+        Future.delayed(const Duration(minutes: 2), () async {
+          try {
+            final hasSafeResponse = await _twilioService.hasUserRespondedSafe(sosId);
+
+            if (!hasSafeResponse) {
+              debugPrint('No response to high-risk SMS. Initiating emergency call...');
+
+              final callSent = await _twilioService.makeEmergencyCall(
+                toPhoneNumber: phoneNumber,
+                sosId: sosId,
+                userId: ownerUserId,
+              );
+
+              if (callSent) {
+                debugPrint('Emergency follow-up call initiated successfully.');
+                if (isMounted()) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('No SMS reply detected. Emergency call initiated.')),
+                  );
+                }
+              } else {
+                debugPrint('Emergency follow-up call failed.');
+                if (isMounted()) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('No SMS reply detected, but emergency call failed.')),
+                  );
+                }
+              }
+            } else {
+              debugPrint('User responded SAFE to high-risk SMS. Skipping call.');
+            }
+          } catch (e) {
+            debugPrint('Error in delayed high-risk call flow: $e');
+          }
+        }),
+      );
     } catch (e) {
       debugPrint('High-risk notification flow failed: $e');
       if (isMounted()) {
