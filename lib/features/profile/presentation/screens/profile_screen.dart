@@ -179,7 +179,6 @@ class ProfileScreen extends ConsumerWidget {
                               'Role',
                               _roleLabel(profileData?.role ?? 'Not specified'),
                               Icons.badge,
-                              onTap: () => _showEditRoleDialog(context, ref, profileData?.role ?? ''),
                             ),
                             if (isRenter) ...[
                               const Divider(),
@@ -2962,62 +2961,6 @@ class ProfileScreen extends ConsumerWidget {
     if (normalized == 'admin') return 'Admin';
     if (normalized.isEmpty) return 'Not specified';
     return raw;
-  }
-
-  Future<void> _showEditRoleDialog(
-    BuildContext context,
-    WidgetRef ref,
-    String currentRole,
-  ) async {
-    final roles = ['owner', 'renter', 'admin'];
-    String selected = currentRole.isEmpty ? 'owner' : currentRole;
-
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Select Role'),
-              content: DropdownButton<String>(
-                value: selected,
-                isExpanded: true,
-                items: roles
-                    .map((e) => DropdownMenuItem(value: e, child: Text(_roleLabel(e))))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selected = value ?? 'owner';
-                  });
-                },
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      await ref.read(profileDataControllerProvider).updateRole(selected);
-                      ref.invalidate(profileDataProvider);
-                      ref.invalidate(userRoleProvider);
-                      if (dialogContext.mounted) {
-                        Navigator.pop(dialogContext);
-                        _showMessage(context, 'Role updated');
-                      }
-                    } catch (e) {
-                      _showMessage(context, _formatSaveError(e));
-                    }
-                  },
-                  child: const Text('Save'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
   }
 
   // EDIT BUDGET DIALOG (from profiles table - for renters)
