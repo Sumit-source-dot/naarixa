@@ -334,7 +334,7 @@ class SosController {
 
       print('✅ Safety check SMS sent successfully');
 
-      Future.delayed(const Duration(minutes: 2), () async {
+      Future.delayed(const Duration(seconds: 30), () async {
         try {
           final hasSafeResponse = await _twilioService.hasUserRespondedSafe(sosId);
 
@@ -430,7 +430,7 @@ class SosController {
       }
 
       unawaited(
-        Future.delayed(const Duration(minutes: 2), () async {
+        Future.delayed(const Duration(seconds: 30), () async {
           try {
             final hasSafeResponse = await _twilioService.hasUserRespondedSafe(sosId);
 
